@@ -109,7 +109,7 @@ class MainActivity : BaseMirrorActivity<ActivityMainBinding>() {
                                     Intent(
                                         this@MainActivity,
                                         MirrorWebViewActivity::class.java
-                                    ).putExtra(EXTRA_URL, "https://github.com")
+                                    ).putExtra(EXTRA_URL, "https://github.com/rayneo-develop/MirrorWebView")
                                 )
                             }
 
