@@ -1,0 +1,304 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1.0">
+    <title>MirrorWebView Demo</title>
+    <style>
+        *{margin:0;padding:0;box-sizing:border-box}
+        body{font-family:system-ui,-apple-system,sans-serif;background:#f5f5f5;color:#333;padding:16px;line-height:1.6}
+        h1{font-size:22px;margin-bottom:12px;text-align:center}
+        h2{font-size:18px;margin:20px 0 8px;border-left:4px solid #1890ff;padding-left:8px}
+        h3{font-size:15px;margin:12px 0 6px}
+        p{margin:6px 0;font-size:14px}
+        a{color:#1890ff;text-decoration:underline}
+        .card{background:#fff;border-radius:8px;padding:14px;margin:10px 0;box-shadow:0 2px 8px rgba(0,0,0,0.08)}
+        button,.btn{display:inline-block;padding:8px 18px;margin:6px 4px;border:none;border-radius:6px;background:#1890ff;color:#fff;font-size:14px;cursor:pointer}
+        button:hover,.btn:hover{background:#40a9ff}
+        .btn-danger{background:#ff4d4f}
+        .btn-success{background:#52c41a}
+        .btn-warning{background:#faad14;color:#333}
+        input[type="text"],textarea,select{width:100%;padding:8px;margin:6px 0;border:1px solid #d9d9d9;border-radius:4px;font-size:14px}
+        textarea{height:60px;resize:vertical}
+        .tag{display:inline-block;padding:2px 10px;margin:3px;border-radius:12px;font-size:12px;background:#e6f7ff;color:#1890ff;border:1px solid #91d5ff}
+        table{width:100%;border-collapse:collapse;margin:8px 0;font-size:13px}
+        th,td{border:1px solid #e8e8e8;padding:8px;text-align:left}
+        th{background:#fafafa;font-weight:600}
+        .grid{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin:8px 0}
+        .grid-item{background:#fff;border-radius:6px;padding:10px;text-align:center;border:1px solid #eee;cursor:pointer}
+        .grid-item:hover{border-color:#1890ff}
+        ul,ol{padding-left:20px;margin:6px 0}
+        li{margin:4px 0;font-size:14px}
+        .badge{display:inline-block;background:#ff4d4f;color:#fff;border-radius:10px;padding:1px 8px;font-size:11px;margin-left:4px}
+        .progress-bar{width:100%;height:16px;background:#f0f0f0;border-radius:8px;overflow:hidden;margin:8px 0}
+        .progress-fill{height:100%;border-radius:8px;transition:width 0.3s}
+        details{margin:8px 0;border:1px solid #d9d9d9;border-radius:6px;padding:8px}
+        summary{cursor:pointer;font-weight:600;font-size:14px}
+        hr{border:none;border-top:1px solid #e8e8e8;margin:16px 0}
+        .footer{text-align:center;color:#999;font-size:12px;margin-top:20px;padding:12px 0}
+        #toast-area{position:fixed;top:10px;left:50%;transform:translateX(-50%);z-index:9999}
+        .toast{background:#333;color:#fff;padding:8px 20px;border-radius:6px;margin:4px 0;font-size:13px;animation:fadeIn 0.3s}
+        @keyframes fadeIn{from{opacity:0;transform:translateY(-10px)}to{opacity:1;transform:translateY(0)}}
+    </style>
+</head>
+<body>
+<div id="toast-area"></div>
+<h1>🕶️ MirrorWebView 功能演示</h1>
+<p style="text-align:center;color:#888;font-size:13px">本页面用于演示暗色模式注入、焦点导航和 JS
+    Bridge 能力</p>
+
+<!-- 区域1: JS Bridge -->
+<h2>📡 JS Bridge 调用</h2>
+<div class="card">
+    <p>通过 <code>MercuryBridge</code> 调用原生能力：</p>
+    <button onclick="callToast()">调用 showToast</button>
+    <button class="btn-danger" onclick="callFinish()">调用 finish 退出</button>
+    <button class="btn-success" onclick="callToast2()">自定义消息 Toast</button>
+</div>
+
+<!-- 区域2: 链接导航 -->
+<h2>🔗 链接导航测试</h2>
+<div class="card">
+    <p>点击链接测试焦点系统对 &lt;a&gt; 标签的支持：</p>
+    <ul>
+        <li><a href="https://www.baidu.com">百度搜索</a></li>
+        <li><a href="https://github.com">GitHub</a></li>
+        <li><a href="https://juejin.cn">掘金技术社区</a></li>
+        <li><a href="https://rayneo.cn">RayNeo 官网</a></li>
+    </ul>
+</div>
+
+<!-- 区域3: 按钮矩阵 -->
+<h2>🎛️ 按钮交互</h2>
+<div class="card">
+    <div class="grid">
+        <div class="grid-item" onclick="showMsg('功能A')">📱 功能 A</div>
+        <div class="grid-item" onclick="showMsg('功能B')">🎮 功能 B</div>
+        <div class="grid-item" onclick="showMsg('功能C')">📷 功能 C</div>
+        <div class="grid-item" onclick="showMsg('功能D')">🎵 功能 D</div>
+    </div>
+    <button class="btn-warning" onclick="showMsg('警告按钮')">⚠️ 警告按钮</button>
+    <button class="btn-success" onclick="showMsg('成功按钮')">✅ 成功按钮</button>
+</div>
+
+<!-- 区域5: 标签云 -->
+<h2>🏷️ 标签云</h2>
+<div class="card">
+    <button class="tag" onclick="showMsg('Android')">Android</button>
+    <button class="tag" onclick="showMsg('Kotlin')">Kotlin</button>
+    <button class="tag" onclick="showMsg('WebView')">WebView</button>
+    <button class="tag" onclick="showMsg('AR眼镜')">AR眼镜</button>
+    <button class="tag" onclick="showMsg('双目显示')">双目显示</button>
+    <button class="tag" onclick="showMsg('镜像方案')">镜像方案</button>
+    <button class="tag" onclick="showMsg('暗色模式')">暗色模式</button>
+    <button class="tag" onclick="showMsg('焦点管理')">焦点管理</button>
+    <button class="tag" onclick="showMsg('JS Bridge')">JS Bridge</button>
+    <button class="tag" onclick="showMsg('Mercury SDK')">Mercury SDK</button>
+    <button class="tag" onclick="showMsg('RayNeo')">RayNeo</button>
+    <button class="tag" onclick="showMsg('TextureView')">TextureView</button>
+</div>
+
+<!-- 区域6: 数据表格 -->
+<h2>📊 数据表格</h2>
+<div class="card" style="overflow-x:auto">
+    <table>
+        <thead>
+        <tr>
+            <th>特性</th>
+            <th>单WebView方案</th>
+            <th>双WebView方案</th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr>
+            <td>JS 环境</td>
+            <td>✅ 唯一</td>
+            <td>❌ 需同步</td>
+        </tr>
+        <tr>
+            <td>H5 改动</td>
+            <td>✅ 零改动</td>
+            <td>❌ 需适配</td>
+        </tr>
+        <tr>
+            <td>Bridge 调用</td>
+            <td>✅ 天然一次</td>
+            <td>❌ 需去重</td>
+        </tr>
+        <tr>
+            <td>内存占用</td>
+            <td>✅ 较低</td>
+            <td>❌ 翻倍</td>
+        </tr>
+        <tr>
+            <td>画面一致性</td>
+            <td>✅ 像素级</td>
+            <td>⚠️ 可能差异</td>
+        </tr>
+        </tbody>
+    </table>
+</div>
+
+<!-- 区域7: 进度条 -->
+<h2>📈 进度展示</h2>
+<div class="card">
+    <p>项目完成度</p>
+    <div class="progress-bar">
+        <div class="progress-fill"
+             style="width:85%;background:linear-gradient(90deg,#1890ff,#52c41a)"></div>
+    </div>
+    <p>测试覆盖率</p>
+    <div class="progress-bar">
+        <div class="progress-fill"
+             style="width:62%;background:linear-gradient(90deg,#faad14,#ff4d4f)"></div>
+    </div>
+    <p>文档完善度</p>
+    <div class="progress-bar">
+        <div class="progress-fill" style="width:45%;background:#722ed1"></div>
+    </div>
+</div>
+
+<!-- 区域8: 折叠面板 -->
+<h2>📂 折叠面板</h2>
+<div class="card">
+    <details>
+        <summary>什么是 MirrorWebView？</summary>
+        <p>MirrorWebView 是一种在 AR 眼镜上实现双目 WebView 显示的方案。只创建一个 WebView 用于左眼，右眼通过
+            TextureView 实时镜像左眼画面。</p>
+    </details>
+    <details>
+        <summary>焦点管理系统如何工作？</summary>
+        <p>通过 JS 注入自动收集页面上所有可点击元素，支持原生标签、ARIA 属性、cursor:pointer
+            及各种框架事件绑定的检测。用户通过镜腿触摸板滑动切换焦点、单击触发点击。</p>
+    </details>
+    <details>
+        <summary>暗色模式是如何实现的？</summary>
+        <p>在 onPageFinished 时注入 JS 代码，遍历所有 DOM 元素将浅色背景改为黑色、深色文字改为灰色，并通过
+            MutationObserver 持续监听动态元素变化。</p>
+    </details>
+</div>
+
+<!-- 区域9: 有序列表 -->
+<h2>📋 使用步骤</h2>
+<div class="card">
+    <ol>
+        <li>在主页面选择要浏览的网站</li>
+        <li>等待页面加载完成（暗色模式+焦点系统自动注入）</li>
+        <li>向前滑动镜腿触摸板 → 焦点移到下一个元素</li>
+        <li>向后滑动镜腿触摸板 → 焦点移到上一个元素</li>
+        <li>单击触摸板 → 点击当前焦点元素</li>
+        <li>双击触摸板 → 返回上一页或退出</li>
+    </ol>
+</div>
+
+<!-- 区域10: 弹窗测试 -->
+<h2>💬 弹窗测试</h2>
+<div class="card">
+    <p>测试焦点系统对动态弹窗的检测能力：</p>
+    <button onclick="openModal()">打开弹窗</button>
+</div>
+
+<!-- 弹窗 -->
+<div id="modal-overlay"
+     style="display:none;position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,0.5);z-index:1000;justify-content:center;align-items:center">
+    <div style="background:#fff;border-radius:12px;padding:20px;width:80%;max-width:350px;margin:auto;margin-top:20%">
+        <h3>弹窗标题</h3>
+        <p>这是一个模态弹窗，焦点系统应自动将焦点范围限制在弹窗内部。</p>
+        <button onclick="showMsg('弹窗按钮A')">按钮 A</button>
+        <button class="btn-success" onclick="showMsg('弹窗按钮B')">按钮 B</button>
+        <button class="btn-danger" onclick="closeModal()">关闭弹窗</button>
+    </div>
+</div>
+
+<!-- 区域11: 计数器 -->
+<h2>🔢 交互计数器</h2>
+<div class="card" style="text-align:center">
+    <p style="font-size:36px;font-weight:bold" id="counter">0</p>
+    <button onclick="changeCount(-1)">➖ 减少</button>
+    <button onclick="changeCount(1)">➕ 增加</button>
+    <button class="btn-warning" onclick="resetCount()">🔄 重置</button>
+</div>
+
+<!-- 区域12: 图片占位 -->
+<h2>🖼️ 图片展示</h2>
+<div class="card">
+    <div style="background:linear-gradient(135deg,#667eea,#764ba2);height:120px;border-radius:8px;display:flex;align-items:center;justify-content:center;color:#fff;font-size:16px;margin-bottom:8px">
+        🕶️ AR 眼镜概念图
+    </div>
+    <div style="background:linear-gradient(135deg,#f093fb,#f5576c);height:120px;border-radius:8px;display:flex;align-items:center;justify-content:center;color:#fff;font-size:16px">
+        📱 双目显示效果图
+    </div>
+</div>
+
+<hr>
+<div class="footer">
+    <p>MirrorWebView Demo Page &copy; 2026</p>
+    <p>Powered by Mercury Android SDK | RayNeo</p>
+    <a href="#" onclick="scrollToTop();return false">⬆️ 返回顶部</a>
+</div>
+<script>
+    // 页面内 Toast 提示
+    function showToast(msg) {
+      var area = document.getElementById('toast-area');
+      var t = document.createElement('div');
+      t.className = 'toast';
+      t.textContent = msg;
+      area.appendChild(t);
+      setTimeout(function(){ t.remove(); }, 2000);
+    }
+
+    // 通用消息展示
+    function showMsg(msg) {
+      showToast('点击了: ' + msg);
+    }
+
+    // JS Bridge 调用
+    function callToast() {
+      if (window.MercuryBridge) {
+        MercuryBridge.showToast('Hello from WebView!');
+      } else {
+        showToast('[模拟] MercuryBridge.showToast()');
+      }
+    }
+    function callToast2() {
+      var msg = '当前时间: ' + new Date().toLocaleTimeString();
+      if (window.MercuryBridge) {
+        MercuryBridge.showToast(msg);
+      } else {
+        showToast('[模拟] ' + msg);
+      }
+    }
+    function callFinish() {
+      if (window.MercuryBridge) {
+        MercuryBridge.finish();
+      } else {
+        showToast('[模拟] MercuryBridge.finish()');
+      }
+    }
+
+    // 弹窗控制
+    function openModal() {
+      document.getElementById('modal-overlay').style.display = 'flex';
+    }
+    function closeModal() {
+      document.getElementById('modal-overlay').style.display = 'none';
+    }
+
+    // 计数器
+    var count = 0;
+    function changeCount(delta) {
+      count += delta;
+      document.getElementById('counter').textContent = count;
+    }
+    function resetCount() {
+      count = 0;
+      document.getElementById('counter').textContent = '0';
+    }
+
+    // 返回顶部
+    function scrollToTop() {
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+</script>
+</body>
+</html>
